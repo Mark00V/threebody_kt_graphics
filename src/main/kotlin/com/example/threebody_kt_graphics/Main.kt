@@ -187,27 +187,35 @@ fun main() {
     val all_pos_2_2d = all_pos_2.map { it.copyOfRange(0, 2) }.toMutableList()
     val all_pos_3_2d = all_pos_3.map { it.copyOfRange(0, 2) }.toMutableList()
 
-    println("all_pos_1")
-    for (row in all_pos_1) {
-        println("-------")
-        for (element in row) {
-            println(element)
-        }
-    }
-    println("all_pos_2")
-    for (row in all_pos_2) {
-        println("-------")
-        for (element in row) {
-            println(element)
-        }
-    }
-    println("all_pos_3")
-    for (row in all_pos_3) {
-        println("-------")
-        for (element in row) {
-            println(element)
-        }
-    }
-    Application.launch(FigureDrawer::class.java)
+    print_matrix(all_pos_1_2d)
+    print_matrix(all_pos_2_2d)
+    print_matrix(all_pos_3_2d)
+    //Application.launch(FigureDrawer::class.java)
 }
 
+fun print_matrix(matrix: MutableList<Array<Double>>) {
+    var maxLenNumber = 0
+    for (row in matrix) {
+        for (element in row) {
+            val formattedNumber = String.format("%.2f", element)
+            val lengthFormattedNumber = formattedNumber.length
+            if (lengthFormattedNumber > maxLenNumber) {
+                maxLenNumber = lengthFormattedNumber
+            }
+        }
+    }
+    println("\n")
+    for (row in matrix) {
+        for ((idx, element) in row.withIndex()) {
+            val formattedNumber = String.format("%.2f", element)
+            var filledElement = formattedNumber.padStart(maxLenNumber+1, ' ')
+            filledElement = filledElement.padEnd(maxLenNumber+2, ' ')
+            print(filledElement)
+            if (idx < row.size - 1) {
+                print('|')
+            }
+
+        }
+        print("\n")
+    }
+}
