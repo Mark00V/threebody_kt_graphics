@@ -1,18 +1,21 @@
 package com.example.threebody_kt_graphics
-
 fun main() {
-    val lst = listOf(
-        listOf(1, 2, 3),
-        listOf(11, 22, 33),
-        listOf(111, 222, 333),
-        listOf(1111, 2222, 3333)
+    val coordinates = mutableListOf(
+        arrayOf(50.0, 200.0),
+        arrayOf(250.0, 150.0),
+        arrayOf(350.0, 200.0),
+        arrayOf(370.0, 200.0),
+        arrayOf(390.0, 200.0),
+        arrayOf(410.0, 200.0)
     )
 
-    val lst2 = lst.map { it.subList(0, 2) }
-    for (row in lst2) {
-        println("-------")
-        for (element in row) {
-            println(element)
+    var minValue = Double.MAX_VALUE
+
+    for (coordinate in coordinates) {
+        if (coordinate[0] < minValue) {
+            minValue = coordinate[0]
         }
     }
+
+    println("Minimum value for the first column: $minValue")
 }

@@ -7,6 +7,7 @@
     <list default="true" id="a087866b-c9f8-4b44-91a2-b51704cc0948" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/example/threebody_kt_graphics/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/example/threebody_kt_graphics/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/example/threebody_kt_graphics/tests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/example/threebody_kt_graphics/tests.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,8 +52,22 @@
   }
 }</component>
   <component name="RunManager" selected="Kotlin.MainKt">
+    <configuration name="Launcher" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.threebody_kt_graphics.Launcher" />
+      <module name="threebody_kt_graphics" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.example.threebody_kt_graphics.MainKt" />
+      <module name="threebody_kt_graphics" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestsKt (1)" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="TestsKt" />
       <module name="threebody_kt_graphics" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -69,6 +84,8 @@
       <list>
         <item itemvalue="Kotlin.MainKt" />
         <item itemvalue="Kotlin.TestsKt" />
+        <item itemvalue="Kotlin.TestsKt (1)" />
+        <item itemvalue="Kotlin.Launcher" />
       </list>
     </recent_temporary>
   </component>

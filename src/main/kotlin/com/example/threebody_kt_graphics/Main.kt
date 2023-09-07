@@ -139,29 +139,103 @@ class Threebody(private val dt: Float, private val num_steps: Int) {
 }
 
 class FigureDrawer() : Application() {
-    override fun start(primaryStage: Stage) {
-        val root = Group()
-        val scene = Scene(root, 400.0, 400.0)
 
-        val coordinates = listOf(
-            Pair(200.0, 200.0),
-            Pair(250.0, 150.0),
-            Pair(350.0, 200.0),
-            Pair(370.0, 200.0),
-            Pair(390.0, 200.0),
-            Pair(410.0, 200.0)
-        )
+    companion object {
+        lateinit var coordinates_earth: MutableList<Array<Double>>
+        lateinit var coordinates_moon: MutableList<Array<Double>>
+    }
+    override fun start(primaryStage: Stage) {
+
+        // gets minimum and maximum coordinates for earth
+        var coordinates_earth_x_min = Double.MAX_VALUE
+        var coordinates_earth_x_max = Double.MIN_VALUE
+        var coordinates_earth_y_min = Double.MAX_VALUE
+        var coordinates_earth_y_max = Double.MIN_VALUE
+
+        for (coordinate in coordinates_earth) {
+            if (coordinate[0] < coordinates_earth_x_min) {
+                coordinates_earth_x_min = coordinate[0]
+            }
+            if (coordinate[0] > coordinates_earth_x_max) {
+                coordinates_earth_x_max = coordinate[0]
+            }
+            if (coordinate[1] < coordinates_earth_y_min) {
+                coordinates_earth_y_min = coordinate[1]
+            }
+            if (coordinate[1] > coordinates_earth_y_max) {
+                coordinates_earth_y_max = coordinate[1]
+            }
+        }
+        println("Earth x: " + coordinates_earth_x_min.toString() + " " + coordinates_earth_x_max.toString())
+        println("Earth y: " + coordinates_earth_y_min.toString() + " " + coordinates_earth_y_max.toString())
+
+        // gets minimum and maximum coordinates for moon
+        var coordinates_moon_x_min = Double.MAX_VALUE
+        var coordinates_moon_x_max = Double.MIN_VALUE
+        var coordinates_moon_y_min = Double.MAX_VALUE
+        var coordinates_moon_y_max = Double.MIN_VALUE
+
+        for (coordinate in coordinates_moon) {
+            if (coordinate[0] < coordinates_moon_x_min) {
+                coordinates_moon_x_min = coordinate[0]
+            }
+            if (coordinate[0] > coordinates_moon_x_max) {
+                coordinates_moon_x_max = coordinate[0]
+            }
+            if (coordinate[1] < coordinates_moon_y_min) {
+                coordinates_moon_y_min = coordinate[1]
+            }
+            if (coordinate[1] > coordinates_moon_y_max) {
+                coordinates_moon_y_max = coordinate[1]
+            }
+        }
+        println("Moon x: " + coordinates_moon_x_min.toString() + " " + coordinates_moon_x_max.toString())
+        println("Moon y: " + coordinates_moon_y_min.toString() + " " + coordinates_moon_y_max.toString())
+
+        // get window size in km
+        val coordinates_x = listOf(coordinates_earth_x_min, coordinates_earth_x_max,
+            coordinates_moon_x_min, coordinates_moon_x_max)
+        val coordinates_y = listOf(coordinates_earth_y_min, coordinates_earth_y_max,
+            coordinates_moon_y_min, coordinates_moon_y_max)
+        val coordinates_x_min = coordinates_x.min()
+        val coordinates_x_max = coordinates_x.max()
+        val coordinates_y_min = coordinates_y.min()
+        val coordinates_y_max = coordinates_y.max()
+        println("All x: " + coordinates_x_min.toString() + " " + coordinates_x_max.toString())
+        println("All y: " + coordinates_y_min.toString() + " " + coordinates_y_max.toString())
+
+        val size_x = coordinates_x_max - coordinates_x_min
+        val size_y = coordinates_y_max - coordinates_y_min
+        println("Size x: " + size_x.toString())
+        println("Size y: " + size_y.toString())
+
+        // coordinate_transfer to window size
+        val window_size_x = 600.0
+        val window_size_y = 600.0
+        val trans_x = size_x/window_size_x
+        val trans_y = size_y/window_size_y
+        println("trans x: " + trans_x.toString())
+        println("trans y: " + trans_y.toString())
+
+        val root = Group()
+        val scene = Scene(root, window_size_x * 1.2, window_size_y * 1.2)
 
         val timeline = Timeline()
 
-        for ((index, coordinate) in coordinates.withIndex()) {
-            val x = coordinate.first
-            val y = coordinate.second
+        for ((index, _) in coordinates_earth.withIndex()) {
+            val coordinate_earth = coordinates_earth[index]
+            val coordinate_moon = coordinates_moon[index]
+            val x_earth = coordinate_earth[0] / trans_x - 1.2 * (coordinates_x_min / trans_x)
+            val y_earth = coordinate_earth[1] / trans_y - 1.2 * (coordinates_y_min / trans_y)
+            val x_moon= coordinate_moon[0] / trans_x - 1.2 * (coordinates_x_min/ trans_x)
+            val y_moon = coordinate_moon[1] / trans_y - 1.2 * (coordinates_y_min/ trans_y)
 
             // Define the action of each KeyFrame to add a circle at the specific coordinates.
-            val keyFrame = KeyFrame(Duration.millis((index + 1) * 500.0), {
-                val point_earth = Circle(x, y, 10.0, Color.BLUE)
+            val keyFrame = KeyFrame(Duration.millis((index + 1) * 1.0), {
+                val point_earth = Circle(x_earth, y_earth, 15.0, Color.BLUE)
+                val point_moon= Circle(x_moon, y_moon, 3.0, Color.GRAY)
                 root.children.add(point_earth)
+                root.children.add(point_moon)
             })
 
             timeline.keyFrames.add(keyFrame)
@@ -176,7 +250,7 @@ class FigureDrawer() : Application() {
 
 fun main() {
     val dt = 360f // in s
-    val num_steps = 10
+    val num_steps = 30000
     val threebody = Threebody(dt, num_steps-1)
     threebody.run_sim()
     val all_pos_1 = threebody.return_positions_1()
@@ -187,10 +261,13 @@ fun main() {
     val all_pos_2_2d = all_pos_2.map { it.copyOfRange(0, 2) }.toMutableList()
     val all_pos_3_2d = all_pos_3.map { it.copyOfRange(0, 2) }.toMutableList()
 
-    print_matrix(all_pos_1_2d)
-    print_matrix(all_pos_2_2d)
-    print_matrix(all_pos_3_2d)
-    //Application.launch(FigureDrawer::class.java)
+    //print_matrix(all_pos_1_2d)
+    //print_matrix(all_pos_2_2d)
+    //print_matrix(all_pos_3_2d)
+
+    FigureDrawer.coordinates_earth = all_pos_1_2d
+    FigureDrawer.coordinates_moon = all_pos_2_2d
+    Application.launch(FigureDrawer::class.java)
 }
 
 fun print_matrix(matrix: MutableList<Array<Double>>) {
