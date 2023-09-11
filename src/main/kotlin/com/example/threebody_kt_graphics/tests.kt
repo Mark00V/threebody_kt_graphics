@@ -9,13 +9,6 @@ fun main() {
         arrayOf(410.0, 200.0)
     )
 
-    var minValue = Double.MAX_VALUE
-
-    for (coordinate in coordinates) {
-        if (coordinate[0] < minValue) {
-            minValue = coordinate[0]
-        }
-    }
-
-    println("Minimum value for the first column: $minValue")
+    println(coordinates[0][0])
 }
+

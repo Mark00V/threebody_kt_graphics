@@ -122,7 +122,7 @@ class Threebody(private val dt: Float, private val num_steps: Int) {
     fun run_sim(): Unit {
         for (step in 1..num_steps) {
             update_pos_vel()
-            update_mass()
+            update_mass(add_m2 = 10e20)
         }
     }
     fun return_positions_1(): MutableList<Array<Double>> {
@@ -141,8 +141,9 @@ class Threebody(private val dt: Float, private val num_steps: Int) {
 class FigureDrawer() : Application() {
 
     companion object {
-        lateinit var coordinates_earth: MutableList<Array<Double>>
-        lateinit var coordinates_moon: MutableList<Array<Double>>
+        lateinit var coordinates_earth: List<Array<Double>>
+        lateinit var coordinates_moon: List<Array<Double>>
+        var frameDuration = 1000.0
     }
     override fun start(primaryStage: Stage) {
 
@@ -151,6 +152,7 @@ class FigureDrawer() : Application() {
         var coordinates_earth_x_max = Double.MIN_VALUE
         var coordinates_earth_y_min = Double.MAX_VALUE
         var coordinates_earth_y_max = Double.MIN_VALUE
+
 
         for (coordinate in coordinates_earth) {
             if (coordinate[0] < coordinates_earth_x_min) {
@@ -222,6 +224,11 @@ class FigureDrawer() : Application() {
 
         val timeline = Timeline()
 
+        // Clear the frame
+        fun clearFrame() {
+            root.children.clear()
+        }
+        // TODO: Coordination transformation is wrong lel
         for ((index, _) in coordinates_earth.withIndex()) {
             val coordinate_earth = coordinates_earth[index]
             val coordinate_moon = coordinates_moon[index]
@@ -231,7 +238,7 @@ class FigureDrawer() : Application() {
             val y_moon = coordinate_moon[1] / trans_y - 1.2 * (coordinates_y_min/ trans_y)
 
             // Define the action of each KeyFrame to add a circle at the specific coordinates.
-            val keyFrame = KeyFrame(Duration.millis((index + 1) * 1.0), {
+            val keyFrame = KeyFrame(Duration.millis((index + 1) * frameDuration), {
                 val point_earth = Circle(x_earth, y_earth, 15.0, Color.BLUE)
                 val point_moon= Circle(x_moon, y_moon, 3.0, Color.GRAY)
                 root.children.add(point_earth)
@@ -248,30 +255,10 @@ class FigureDrawer() : Application() {
     }
 }
 
-fun main() {
-    val dt = 360f // in s
-    val num_steps = 30000
-    val threebody = Threebody(dt, num_steps-1)
-    threebody.run_sim()
-    val all_pos_1 = threebody.return_positions_1()
-    val all_pos_2 = threebody.return_positions_2()
-    val all_pos_3 = threebody.return_positions_3()
-
-    val all_pos_1_2d = all_pos_1.map { it.copyOfRange(0, 2) }.toMutableList()
-    val all_pos_2_2d = all_pos_2.map { it.copyOfRange(0, 2) }.toMutableList()
-    val all_pos_3_2d = all_pos_3.map { it.copyOfRange(0, 2) }.toMutableList()
-
-    //print_matrix(all_pos_1_2d)
-    //print_matrix(all_pos_2_2d)
-    //print_matrix(all_pos_3_2d)
-
-    FigureDrawer.coordinates_earth = all_pos_1_2d
-    FigureDrawer.coordinates_moon = all_pos_2_2d
-    Application.launch(FigureDrawer::class.java)
-}
-
-fun print_matrix(matrix: MutableList<Array<Double>>) {
+fun print_matrix(matrix: List<Array<Double>>) {
     var maxLenNumber = 0
+    val nbrOfRows = matrix.size
+    val nbrOfColumns = matrix[0].size
     for (row in matrix) {
         for (element in row) {
             val formattedNumber = String.format("%.2f", element)
@@ -281,8 +268,11 @@ fun print_matrix(matrix: MutableList<Array<Double>>) {
             }
         }
     }
-    println("\n")
-    for (row in matrix) {
+    val divStr = "-".repeat(nbrOfColumns * (maxLenNumber+2) + nbrOfRows.toString().length + 3)
+
+    println("\nMatrix:")
+    for ((idrow, row) in matrix.withIndex()) {
+        print("i_" + idrow + ":")
         for ((idx, element) in row.withIndex()) {
             val formattedNumber = String.format("%.2f", element)
             var filledElement = formattedNumber.padStart(maxLenNumber+1, ' ')
@@ -293,6 +283,30 @@ fun print_matrix(matrix: MutableList<Array<Double>>) {
             }
 
         }
-        print("\n")
+        if (idrow < nbrOfRows-1) {
+            print("\n" + divStr + "\n")
+        }
     }
+    print("\n\n")
+}
+
+fun main() {
+    val dt = 3600f // in s
+    val num_steps = 5000
+    val frameDuration = 2.0
+    val threebody = Threebody(dt, num_steps-1)
+    threebody.run_sim()
+    val all_pos_1 = threebody.return_positions_1()
+    val all_pos_2 = threebody.return_positions_2()
+    val all_pos_3 = threebody.return_positions_3()
+
+    val all_pos_1_2d = all_pos_1.map { it.copyOfRange(0, 2) }.toList()
+    val all_pos_2_2d = all_pos_2.map { it.copyOfRange(0, 2) }.toList()
+    val all_pos_3_2d = all_pos_3.map { it.copyOfRange(0, 2) }.toList()
+
+    //print_matrix(all_pos_1_2d)
+    FigureDrawer.frameDuration = frameDuration
+    FigureDrawer.coordinates_earth = all_pos_1_2d
+    FigureDrawer.coordinates_moon = all_pos_2_2d
+    Application.launch(FigureDrawer::class.java)
 }
